@@ -17,12 +17,14 @@ vim.opt.termguicolors = false
 vim.opt.ignorecase = true
 vim.opt.smartindent = true
 vim.opt.swapfile = false
-vim.opt.undodir = "/home/mai/.vim/undodir"
+vim.opt.undodir = "/home/milize/.vim/undodir"
 vim.opt.undofile = true
 vim.opt.updatetime = 300
 vim.opt.clipboard = "unnamedplus"
 vim.opt.cursorline = false
 vim.opt.numberwidth = 2
+vim.opt.shiftwidth = 2
+vim.opt.tabstop = 2
 vim.opt.wrap = true
 vim.opt.scrolloff = 8 -- is one of my fav
 vim.opt.sidescrolloff = 8
@@ -49,13 +51,13 @@ lvim.leader = "space"
 -- add your own keymapping
 lvim.keys.normal_mode = {
   ["<C-s>"] = ":w<cr>",
-  ["<C-p>"] = "<Cmd>Telescope find_files<CR>",
+  ["<C-p>"] = "<Cmd>FzfLua files<CR>",
   ["<Leader>p"] = "<Cmd>NvimTreeToggle<CR>",
 
 
   ["<Leader>so"] = "<Cmd>set spell!<CR>",
   -- ["<C-v>"] = "<Esc>Pli",
-  ["<C-f>"] = "<Cmd>Telescope live_grep<CR>", -- Search files
+  ["<C-f>"] = "<Cmd>FzfLua grep_project<CR>", -- Search files
   ["<C-u>"] = "<Cmd>UndotreeToggle<CR>",          -- Toggle Undotree
   ["<Leader>m"] = "<Cmd>MarkdownPreviewToggle<CR>",
 
@@ -69,6 +71,9 @@ lvim.keys.normal_mode = {
 
   -- Disable AutoComplete for buffer
   ["<Leader>ac"] = "<Cmd>lua require('cmp').setup.buffer { enabled = false }<CR>",
+
+  -- Search and replace word underneath
+  ["<Leader>r"] = ":%s/<C-r><C-w>/",
 
 }
 
@@ -97,18 +102,27 @@ vim.cmd("imap <c-v> <Esc>pli")
 -- plugins
 
 lvim.plugins = {
-  {"lunarvim/colorschemes"},
-  {"ChngYrNick/wal.vim"}, -- Follow pywal colorscheme
-  {"mbbill/undotree"},
-  {'iamcco/markdown-preview.nvim', run = [[sh -c 'cd app && yarn install']]},
-  {'ap/vim-css-color'},
-  {'tpope/vim-surround'},
-  {'mg979/vim-visual-multi'},
-  {'metakirby5/codi.vim'},
+  { 'lunarvim/colorschemes' },
+  { 'ChngYrNick/wal.vim' }, -- Follow pywal colorscheme
+  { 'mbbill/undotree' },
+  { 'iamcco/markdown-preview.nvim', run = [[sh -c 'cd app && yarn install']]},
+  { 'ap/vim-css-color' },
+  { 'tpope/vim-surround' },
+  { 'mg979/vim-visual-multi' },
+  { 'metakirby5/codi.vim' },
   { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' },
   { 'brooth/far.vim' },
   { 'kkoomen/vim-doge' },
+  { 'lervag/vimtex' },
+  { 'ibhagwan/fzf-lua', requires = 'kyazdani42/nvim-web-devicons' },
+  -- { 'nyngwang/NeoRoot.lua' },
+  -- { 'lewis6991/gitsigns.nvim', requires = 'nvim-lua/plenary.nvim' },
+  { 'folke/todo-comments.nvim', requires = 'nvim-lua/plenary.nvim' },
+  { 'TimUntersberger/neogit', requires = { 'nvim-lua/plenary.nvim', 'sindrets/diffview.nvim' } },
+  { 'Pocco81/TrueZen.nvim' },
+
 }
+
 
 -- unmap a default keymapping
 -- lvim.keys.normal_mode["<C-Up>"] = ""
@@ -215,3 +229,116 @@ vim.cmd("let g:mkdp_auto_start = 0")
 vim.cmd("let g:mkdp_markdown_css = expand('~/.config/nvim/markdowncss.css')")
 vim.cmd("let g:VM_mouse_mappings = 1")
 
+
+vim.cmd("let g:vimtex_view_method = 'zathura'")
+
+
+-- lua
+-- vim.g.nvim_tree_respect_buf_cwd = 1
+-- vim.g.ello12 = 2
+
+require("nvim-tree").setup({
+  update_cwd = true,
+  -- update_focused_file = {
+  --   enable = true,
+  --   update_cwd = true
+  -- },
+})
+
+-- require("todo-comments").setup {
+  -- your configuration comes here
+  -- or leave it empty to use the default settings
+  -- refer to the configuration section below
+-- }
+
+require('neogit').setup {
+  disable_commit_confirmation = true,
+  disable_insert_on_commit = false,
+  integrations = {
+    -- Neogit only provides inline diffs. If you want a more traditional way to look at diffs, you can use `sindrets/diffview.nvim`.
+    -- The diffview integration enables the diff popup, which is a wrapper around `sindrets/diffview.nvim`.
+    --
+    -- Requires you to have `sindrets/diffview.nvim` installed.
+    -- use { 
+    --   'TimUntersberger/neogit', 
+    --   requires = { 
+    --     'nvim-lua/plenary.nvim',
+    --     'sindrets/diffview.nvim' 
+    --   }
+    -- }
+    --
+    diffview = true
+  }
+}
+
+
+local true_zen = require("true-zen")
+
+true_zen.setup({
+	ui = {
+		bottom = {
+			laststatus = 0,
+			ruler = false,
+			showmode = false,
+			showcmd = false,
+			cmdheight = 1,
+		},
+		top = {
+			showtabline = 0,
+		},
+		left = {
+			number = false,
+			relativenumber = false,
+			signcolumn = "no",
+		},
+	},
+	modes = {
+		ataraxis = {
+			left_padding = 32,
+			right_padding = 32,
+			top_padding = 1,
+			bottom_padding = 1,
+			ideal_writing_area_width = {0},
+			auto_padding = true,
+			keep_default_fold_fillchars = true,
+			custom_bg = {"none", ""},
+			bg_configuration = true,
+			quit = "untoggle",
+			ignore_floating_windows = true,
+			affected_higroups = {
+				NonText = true,
+				FoldColumn = true,
+				ColorColumn = true,
+				VertSplit = true,
+				StatusLine = true,
+				StatusLineNC = true,
+				SignColumn = true,
+			},
+		},
+		focus = {
+			margin_of_error = 5,
+			focus_method = "experimental"
+		},
+	},
+	integrations = {
+		vim_gitgutter = false,
+		galaxyline = false,
+		tmux = false,
+		gitsigns = false,
+		nvim_bufferline = false,
+		limelight = false,
+		twilight = false,
+		vim_airline = false,
+		vim_powerline = false,
+		vim_signify = false,
+		express_line = false,
+		lualine = false,
+		lightline = false,
+		feline = false
+	},
+	misc = {
+		on_off_commands = false,
+		ui_elements_commands = false,
+		cursor_by_mode = false,
+	}
+})
