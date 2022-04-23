@@ -17,7 +17,7 @@ vim.opt.termguicolors = false
 vim.opt.ignorecase = true
 vim.opt.smartindent = true
 vim.opt.swapfile = false
-vim.opt.undodir = "/home/milize/.vim/undodir"
+vim.opt.undodir = "/home/mai/.vim/undodir"
 vim.opt.undofile = true
 vim.opt.updatetime = 300
 vim.opt.clipboard = "unnamedplus"
@@ -79,7 +79,6 @@ lvim.keys.normal_mode = {
 
 -- visual keybinds
 lvim.keys.visual_mode = {
-
   ["<C-c>"] = "y<Esc>i",
   ["<C-v>"] = "\"_dP",
   ["s"] = "\"_s", -- Don't copy on 's'
@@ -161,7 +160,9 @@ lvim.plugins = {
 
 -- TODO: User Config for predefined plugins
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
-lvim.builtin.dashboard.active = true
+lvim.builtin.alpha.active = true
+lvim.builtin.alpha.mode = "dashboard"
+lvim.builtin.notify.active = true
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.show_icons.git = 0
@@ -270,7 +271,6 @@ require('neogit').setup {
     diffview = true
   }
 }
-
 
 local true_zen = require("true-zen")
 
