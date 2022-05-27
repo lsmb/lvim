@@ -35,11 +35,25 @@ vim.opt.timeoutlen = 100
 
 vim.opt.shell = "/usr/bin/sh" -- Better performance than 'fish' shell
 
+-- function _G.set_terminal_keymaps()
+--   local opts = {noremap = true}
+--   vim.api.nvim_buf_set_keymap(0, 't', '<esc>', [[<Cmd>close<Cr>]], opts)
+--   vim.api.nvim_buf_set_keymap(1, 't', '<esc>', [[<Cmd>close<Cr>]], opts)
+--   vim.api.nvim_buf_set_keymap(0, 't', 'jk', [[<C-\><C-n>]], opts)
+--   vim.api.nvim_buf_set_keymap(0, 't', '<C-h>', [[<C-\><C-n><C-W>h]], opts)
+--   vim.api.nvim_buf_set_keymap(0, 't', '<C-j>', [[<C-\><C-n><C-W>j]], opts)
+--   vim.api.nvim_buf_set_keymap(0, 't', '<C-k>', [[<C-\><C-n><C-W>k]], opts)
+--   vim.api.nvim_buf_set_keymap(0, 't', '<C-l>', [[<C-\><C-n><C-W>l]], opts)
+-- end
+
+-- -- if you only want these mappings for toggle term use term://*toggleterm#* instead
+-- vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
+
 
 lvim.line_wrap_cursor_movement = false
 
 
--- lvim.builtin.telescope.live_grep.file_previewer = 
+-- lvim.builtin.telescope.live_grep.file_previewer =
 
 
 -- colorscheme
@@ -57,7 +71,7 @@ lvim.keys.normal_mode = {
 
   ["<Leader>so"] = "<Cmd>set spell!<CR>",
   -- ["<C-v>"] = "<Esc>Pli",
-  ["<C-f>"] = "<Cmd>FzfLua grep_project<CR>", -- Search files
+  ["<C-f>"] = "<Cmd>FzfLua live_grep<CR>", -- Search files
   ["<C-u>"] = "<Cmd>UndotreeToggle<CR>",          -- Toggle Undotree
   ["<Leader>m"] = "<Cmd>MarkdownPreviewToggle<CR>",
 
@@ -74,6 +88,7 @@ lvim.keys.normal_mode = {
 
   -- Search and replace word underneath
   ["<Leader>r"] = ":%s/<C-r><C-w>/",
+  ["<Leader>t"] = "<Cmd>ToggleTerm<CR>",
 
 }
 
@@ -81,7 +96,7 @@ lvim.keys.normal_mode = {
 lvim.keys.visual_mode = {
   ["<C-c>"] = "y<Esc>i",
   ["<C-v>"] = "\"_dP",
-  ["s"] = "\"_s", -- Don't copy on 's'
+  -- ["s"] = "\"_s", -- Don't copy on 's'
   [">"] = ">gv", -- Keeps indentation selection
   ["<"] = "<gv"
   -- ["d"] = "\"_d"
@@ -119,7 +134,26 @@ lvim.plugins = {
   { 'folke/todo-comments.nvim', requires = 'nvim-lua/plenary.nvim' },
   { 'TimUntersberger/neogit', requires = { 'nvim-lua/plenary.nvim', 'sindrets/diffview.nvim' } },
   { 'Pocco81/TrueZen.nvim' },
-
+  { 'SidOfc/mkdx' },
+  {"ellisonleao/glow.nvim", branch = 'main'},
+  {
+    "phaazon/hop.nvim",
+    event = "BufRead",
+    config = function()
+      require("hop").setup()
+      vim.api.nvim_set_keymap("n", "S", ":HopWord<cr>", { silent = true })
+    end,
+  },
+  {"wfxr/minimap.vim"},
+  {
+    "mattn/vim-gist",
+    event = "BufRead",
+    requires = "mattn/webapi-vim",
+  },
+{"kevinhwang91/rnvimr"},
+{"uga-rosa/cmp-dictionary"},
+{"Pocco81/AutoSave.nvim"},
+{"jlcrochet/vim-razor"}
 }
 
 
@@ -224,6 +258,10 @@ lvim.builtin.treesitter.highlight.enabled = true
 --   }
 -- }
 
+-- For gist
+vim.cmd("let g:gist_use_password_in_gitconfig = 1")
+
+
 -- Settings for MarkdownPreview
 vim.cmd("let g:mkdp_browser = 'firefox-nightly'")
 vim.cmd("let g:mkdp_auto_start = 0")
@@ -232,6 +270,9 @@ vim.cmd("let g:VM_mouse_mappings = 1")
 
 
 vim.cmd("let g:vimtex_view_method = 'zathura'")
+
+-- Settings for Markdown MKDX plugin
+vim.cmd("let g:mkdx#settings = { 'highlight': { 'enable': 1 }, 'enter': { 'shift': 1 }, 'links': { 'external': { 'enable': 1 } }, 'toc': { 'text': 'Table of Contents', 'update_on_write': 1 }, 'fold': { 'enable': 1 } }")
 
 
 -- lua
@@ -270,6 +311,30 @@ require('neogit').setup {
     --
     diffview = true
   }
+}
+
+require('lspconfig').volar.setup{
+  filetypes = {'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'json'},
+  typescript = {
+      serverPath = '/home/mai/.npm-global/lib/node_modules/typescript/lib/tsserverlibrary.js'
+    },
+  init_options = {
+    typescript = {
+      serverPath = '/home/mai/.npm-global/lib/node_modules/typescript/lib/tsserverlibrary.js'
+    }
+  }
+}
+
+-- require'lspconfig'.volar.setup{}
+
+-- require'lspconfig'.vuels.setup{}
+
+-- require'lspconfig'.tsserver.setup{
+--   filetypes = {'vue', 'typescript', 'javascriptreact'}
+-- }
+
+require'lspconfig'.tailwindcss.setup{
+filetypes = {'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue'}
 }
 
 local true_zen = require("true-zen")
@@ -342,3 +407,26 @@ true_zen.setup({
 		cursor_by_mode = false,
 	}
 })
+
+
+-- Autosave
+
+-- local autosave = require("autosave")
+
+-- autosave.setup(
+--     {
+--         enabled = true,
+--         execution_message = "Saved at " .. vim.fn.strftime("%H:%M:%S"),
+--         events = {"InsertLeave", "TextChanged"},
+--         conditions = {
+--             exists = true,
+--             filename_is_not = {},
+--             filetype_is_not = {},
+--             modifiable = true
+--         },
+--         write_all_buffers = false,
+--         on_off_commands = true,
+--         clean_command_line_interval = 0,
+--         debounce_delay = 1000
+--     }
+-- )
