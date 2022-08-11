@@ -10,10 +10,10 @@ an executable
 -- general
 lvim.log.level = "warn"
 lvim.format_on_save = true
-lvim.colorscheme = "wal"
+lvim.colorscheme = "pywal"
 lvim.transparent_window = true
 vim.opt.completeopt = { "menuone", "noselect" }
-vim.opt.termguicolors = false
+vim.opt.termguicolors = true
 vim.opt.ignorecase = true
 vim.opt.smartindent = true
 vim.opt.swapfile = false
@@ -117,7 +117,8 @@ vim.cmd("imap <c-v> <Esc>pli")
 
 lvim.plugins = {
   { 'lunarvim/colorschemes' },
-  { 'ChngYrNick/wal.vim' }, -- Follow pywal colorscheme
+  -- { 'ChngYrNick/wal.vim' }, -- Follow pywal colorscheme
+  { 'AlphaTechnolog/pywal.nvim', as = 'pywal' },
   { 'mbbill/undotree' },
   { 'iamcco/markdown-preview.nvim', run = [[sh -c 'cd app && yarn install']]},
   { 'ap/vim-css-color' },
@@ -199,7 +200,7 @@ lvim.builtin.alpha.mode = "dashboard"
 lvim.builtin.notify.active = true
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
-lvim.builtin.nvimtree.show_icons.git = 0
+-- lvim.builtin.nvimtree.show_icons.git = 0
 
 -- if you don't want all the parsers change this to a table of the ones you want
 lvim.builtin.treesitter.ensure_installed = {
@@ -408,6 +409,10 @@ true_zen.setup({
 	}
 })
 
+local pywal = require('pywal')
+
+pywal.setup()
+
 
 -- Autosave
 
@@ -430,3 +435,18 @@ true_zen.setup({
 --         debounce_delay = 1000
 --     }
 -- )
+
+vim.api.nvim_create_autocmd("CursorHold", {
+  buffer = bufnr,
+  callback = function()
+    local opts = {
+      focusable = false,
+      close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+      border = 'rounded',
+      source = 'always',
+      prefix = ' ',
+      scope = 'cursor',
+    }
+    vim.diagnostic.open_float(nil, opts)
+  end
+})
