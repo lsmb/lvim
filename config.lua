@@ -7,6 +7,8 @@ a global executable or a path to
 an executable
 ]]
 
+local home_path = vim.fn.expand('$HOME')
+
 -- general
 lvim.log.level = "warn"
 lvim.format_on_save = true
@@ -17,7 +19,7 @@ vim.opt.termguicolors = true
 vim.opt.ignorecase = true
 vim.opt.smartindent = true
 vim.opt.swapfile = false
-vim.opt.undodir = "/home/mai/.vim/undodir"
+vim.opt.undodir = home_path .. "/.vim/undodir"
 vim.opt.undofile = true
 vim.opt.updatetime = 300
 vim.opt.clipboard = "unnamedplus"
@@ -72,7 +74,7 @@ lvim.keys.normal_mode = {
   ["<Leader>so"] = "<Cmd>set spell!<CR>",
   -- ["<C-v>"] = "<Esc>Pli",
   ["<C-f>"] = "<Cmd>FzfLua live_grep<CR>", -- Search files
-  ["<C-u>"] = "<Cmd>UndotreeToggle<CR>",          -- Toggle Undotree
+  ["<C-u>"] = "<Cmd>UndotreeToggle<CR>", -- Toggle Undotree
   ["<Leader>m"] = "<Cmd>MarkdownPreviewToggle<CR>",
 
   -- Navigate buffers
@@ -120,7 +122,7 @@ lvim.plugins = {
   -- { 'ChngYrNick/wal.vim' }, -- Follow pywal colorscheme
   { 'AlphaTechnolog/pywal.nvim', as = 'pywal' },
   { 'mbbill/undotree' },
-  { 'iamcco/markdown-preview.nvim', run = [[sh -c 'cd app && yarn install']]},
+  { 'iamcco/markdown-preview.nvim', run = [[sh -c 'cd app && yarn install']] },
   { 'ap/vim-css-color' },
   { 'tpope/vim-surround' },
   { 'mg979/vim-visual-multi' },
@@ -136,27 +138,33 @@ lvim.plugins = {
   { 'TimUntersberger/neogit', requires = { 'nvim-lua/plenary.nvim', 'sindrets/diffview.nvim' } },
   { 'Pocco81/TrueZen.nvim' },
   { 'SidOfc/mkdx' },
-  {"ellisonleao/glow.nvim", branch = 'main'},
-  {
-    "phaazon/hop.nvim",
-    event = "BufRead",
-    config = function()
-      require("hop").setup()
-      vim.api.nvim_set_keymap("n", "S", ":HopWord<cr>", { silent = true })
-    end,
-  },
-  {"wfxr/minimap.vim"},
+  { "ellisonleao/glow.nvim", branch = 'main' },
   {
     "mattn/vim-gist",
     event = "BufRead",
     requires = "mattn/webapi-vim",
   },
-{"kevinhwang91/rnvimr"},
-{"uga-rosa/cmp-dictionary"},
-{"Pocco81/AutoSave.nvim"},
-{"jlcrochet/vim-razor"}
+  { "kevinhwang91/rnvimr" },
+  { "uga-rosa/cmp-dictionary" },
+  { "simrat39/rust-tools.nvim" },
+  {
+    'phaazon/hop.nvim',
+    branch = 'v2', -- optional but strongly recommended
+    config = function()
+      -- you can configure Hop the way you like here; see :h hop-config
+      require 'hop'.setup { keys = 'etovxqpdygfblzhckisuran' }
+    end
+  }
 }
 
+local hop = require('hop')
+local directions = require('hop.hint').HintDirection
+vim.keymap.set('', 'f', function()
+  hop.hint_char1({ current_line_only = false })
+end, { remap = true })
+vim.keymap.set('', 'F', function()
+  hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = false })
+end, { remap = true })
 
 -- unmap a default keymapping
 -- lvim.keys.normal_mode["<C-Up>"] = ""
@@ -271,6 +279,7 @@ vim.cmd("let g:VM_mouse_mappings = 1")
 
 
 vim.cmd("let g:vimtex_view_method = 'zathura'")
+vim.cmd("let g:codi#rightalign = 1")
 
 -- Settings for Markdown MKDX plugin
 vim.cmd("let g:mkdx#settings = { 'highlight': { 'enable': 1 }, 'enter': { 'shift': 1 }, 'links': { 'external': { 'enable': 1 } }, 'toc': { 'text': 'Table of Contents', 'update_on_write': 1 }, 'fold': { 'enable': 1 } }")
@@ -289,9 +298,9 @@ require("nvim-tree").setup({
 })
 
 -- require("todo-comments").setup {
-  -- your configuration comes here
-  -- or leave it empty to use the default settings
-  -- refer to the configuration section below
+-- your configuration comes here
+-- or leave it empty to use the default settings
+-- refer to the configuration section below
 -- }
 
 require('neogit').setup {
@@ -302,11 +311,11 @@ require('neogit').setup {
     -- The diffview integration enables the diff popup, which is a wrapper around `sindrets/diffview.nvim`.
     --
     -- Requires you to have `sindrets/diffview.nvim` installed.
-    -- use { 
-    --   'TimUntersberger/neogit', 
-    --   requires = { 
+    -- use {
+    --   'TimUntersberger/neogit',
+    --   requires = {
     --     'nvim-lua/plenary.nvim',
-    --     'sindrets/diffview.nvim' 
+    --     'sindrets/diffview.nvim'
     --   }
     -- }
     --
@@ -314,14 +323,14 @@ require('neogit').setup {
   }
 }
 
-require('lspconfig').volar.setup{
-  filetypes = {'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'json'},
+require('lspconfig').volar.setup {
+  filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'json' },
   typescript = {
-      serverPath = '/home/mai/.npm-global/lib/node_modules/typescript/lib/tsserverlibrary.js'
-    },
+    serverPath = home_path .. '/.npm-global/lib/node_modules/typescript/lib/tsserverlibrary.js'
+  },
   init_options = {
     typescript = {
-      serverPath = '/home/mai/.npm-global/lib/node_modules/typescript/lib/tsserverlibrary.js'
+      serverPath = home_path .. '.npm-global/lib/node_modules/typescript/lib/tsserverlibrary.js'
     }
   }
 }
@@ -334,79 +343,79 @@ require('lspconfig').volar.setup{
 --   filetypes = {'vue', 'typescript', 'javascriptreact'}
 -- }
 
-require'lspconfig'.tailwindcss.setup{
-filetypes = {'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue'}
+require 'lspconfig'.tailwindcss.setup {
+  filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' }
 }
 
 local true_zen = require("true-zen")
 
 true_zen.setup({
-	ui = {
-		bottom = {
-			laststatus = 0,
-			ruler = false,
-			showmode = false,
-			showcmd = false,
-			cmdheight = 1,
-		},
-		top = {
-			showtabline = 0,
-		},
-		left = {
-			number = false,
-			relativenumber = false,
-			signcolumn = "no",
-		},
-	},
-	modes = {
-		ataraxis = {
-			left_padding = 32,
-			right_padding = 32,
-			top_padding = 1,
-			bottom_padding = 1,
-			ideal_writing_area_width = {0},
-			auto_padding = true,
-			keep_default_fold_fillchars = true,
-			custom_bg = {"none", ""},
-			bg_configuration = true,
-			quit = "untoggle",
-			ignore_floating_windows = true,
-			affected_higroups = {
-				NonText = true,
-				FoldColumn = true,
-				ColorColumn = true,
-				VertSplit = true,
-				StatusLine = true,
-				StatusLineNC = true,
-				SignColumn = true,
-			},
-		},
-		focus = {
-			margin_of_error = 5,
-			focus_method = "experimental"
-		},
-	},
-	integrations = {
-		vim_gitgutter = false,
-		galaxyline = false,
-		tmux = false,
-		gitsigns = false,
-		nvim_bufferline = false,
-		limelight = false,
-		twilight = false,
-		vim_airline = false,
-		vim_powerline = false,
-		vim_signify = false,
-		express_line = false,
-		lualine = false,
-		lightline = false,
-		feline = false
-	},
-	misc = {
-		on_off_commands = false,
-		ui_elements_commands = false,
-		cursor_by_mode = false,
-	}
+  ui = {
+    bottom = {
+      laststatus = 0,
+      ruler = false,
+      showmode = false,
+      showcmd = false,
+      cmdheight = 1,
+    },
+    top = {
+      showtabline = 0,
+    },
+    left = {
+      number = false,
+      relativenumber = false,
+      signcolumn = "no",
+    },
+  },
+  modes = {
+    ataraxis = {
+      left_padding = 32,
+      right_padding = 32,
+      top_padding = 1,
+      bottom_padding = 1,
+      ideal_writing_area_width = { 0 },
+      auto_padding = true,
+      keep_default_fold_fillchars = true,
+      custom_bg = { "none", "" },
+      bg_configuration = true,
+      quit = "untoggle",
+      ignore_floating_windows = true,
+      affected_higroups = {
+        NonText = true,
+        FoldColumn = true,
+        ColorColumn = true,
+        VertSplit = true,
+        StatusLine = true,
+        StatusLineNC = true,
+        SignColumn = true,
+      },
+    },
+    focus = {
+      margin_of_error = 5,
+      focus_method = "experimental"
+    },
+  },
+  integrations = {
+    vim_gitgutter = false,
+    galaxyline = false,
+    tmux = false,
+    gitsigns = false,
+    nvim_bufferline = false,
+    limelight = false,
+    twilight = false,
+    vim_airline = false,
+    vim_powerline = false,
+    vim_signify = false,
+    express_line = false,
+    lualine = false,
+    lightline = false,
+    feline = false
+  },
+  misc = {
+    on_off_commands = false,
+    ui_elements_commands = false,
+    cursor_by_mode = false,
+  }
 })
 
 local pywal = require('pywal')
@@ -449,4 +458,18 @@ vim.api.nvim_create_autocmd("CursorHold", {
     }
     vim.diagnostic.open_float(nil, opts)
   end
+})
+
+
+local rt = require("rust-tools")
+
+rt.setup({
+  server = {
+    on_attach = function(_, bufnr)
+      -- Hover actions
+      vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
+      -- Code action groups
+      vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+    end,
+  },
 })
